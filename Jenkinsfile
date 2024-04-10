@@ -36,7 +36,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # Deploy to IIS
-cp -r frontend/build /var/www/html/devops # Copy frontend build to Apache web server directory
-cp -r backend /path/to/backend/directory   # Copy backend files to appropriate directory
+cp -r RASHMIT/Sites/prac # Copy frontend build to Apache web server directory
 
 # Make sure to replace '/path/to/backend/directory' with the correct path for your backend
