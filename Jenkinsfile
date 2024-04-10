@@ -1,35 +1,42 @@
-pipeline {
-    agent any
-    tools { 
-        nodejs "LatestNode" // Ensure Node.js is installed
-    }
-    stages {
-        stage('Install npm packages') {
-            steps {
-                bat 'cd frontend && npm install' // Navigate to frontend directory and install dependencies
-            }
-        }
-        stage('Build frontend') {
-            steps {
-                bat 'cd frontend && npm run build' // Build the frontend
-            }
-        }
-        stage('Install backend npm packages') {
-            steps {
-                bat 'cd backend && npm install' // Navigate to backend directory and install dependencies
-            }
-        }
-        stage('Build backend') {
-            steps {
-                bat 'cd backend && npm run build' // If necessary, run any build commands for the backend
-            }
-        }
-        stage('Deploy to IIS') {
-            steps {
-                bat 'Xcopy frontend/build C:\\inetpub\\wwwroot\\Devops /E /H /C /I /Y' // Copy frontend build to IIS directory
-                bat 'Xcopy backend C:\\path\\to\\backend\\directory /E /H /C /I /Y' // Copy backend files to appropriate directory
-                // Make sure to replace 'C:\\path\\to\\backend\\directory' with the correct path for your backend
-            }
-        }
-    }
-}
+#!/bin/bash
+
+# Ensure Node.js is installed
+NODE_VERSION=$(node -v)
+if [ -z "$NODE_VERSION" ]; then
+    echo "Node.js is not installed. Please install Node.js."
+    exit 1
+fi
+
+# Install npm packages for frontend
+cd frontend && npm install
+if [ $? -ne 0 ]; then
+    echo "Failed to install npm packages for frontend."
+    exit 1
+fi
+
+# Build frontend
+npm run build
+if [ $? -ne 0 ]; then
+    echo "Failed to build frontend."
+    exit 1
+fi
+
+# Install npm packages for backend
+cd ../backend && npm install
+if [ $? -ne 0 ]; then
+    echo "Failed to install npm packages for backend."
+    exit 1
+fi
+
+# Build backend
+npm run build
+if [ $? -ne 0 ]; then
+    echo "Failed to build backend."
+    exit 1
+fi
+
+# Deploy to IIS
+cp -r frontend/build /var/www/html/devops # Copy frontend build to Apache web server directory
+cp -r backend /path/to/backend/directory   # Copy backend files to appropriate directory
+
+# Make sure to replace '/path/to/backend/directory' with the correct path for your backend
